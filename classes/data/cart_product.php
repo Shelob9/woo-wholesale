@@ -12,12 +12,10 @@ namespace josh\ww\data;
 class cart_product {
 
 	public $qty;
-
 	public $id;
 
-
 	public function __construct( $id, $qty ) {
-		$this->qty = $qty;
 		$this->id = $id;
+		$this->qty = $qty;
 	}
 }

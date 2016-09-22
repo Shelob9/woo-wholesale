@@ -28,8 +28,8 @@ class save {
 		for( $i = 1; $i <= 3; $i++ ){
 			if( isset( $new_data[ $i ] ) ){
 				$level = 'jww_level_' . $i;
-				$this->settings->set_batch_size( $level, $new_data[$i][0] );
-				$this->settings->set_discount( $level, $new_data[$i][1] );
+				$this->settings->set_batch_size( $level, $new_data[$i]->id );
+				$this->settings->set_discount( $level, $new_data[$i]->qty );
 			}
 		}
 

@@ -35,13 +35,13 @@ if( ! isset( $roles ) ){
 				?>
 			<tr>
 				<td>
-					<?php echo esc_html(  $role->label ); ?>
+					<?php echo esc_html( $role->label ); ?>
 				</td>
 				<td>
 					<input value="<?php echo esc_attr( $role->discount ); ?>" type="number" min="0" max="100" step="1" aria-labelledby="jww-discount-amount" name="<?php echo esc_attr( 'discount[' . $i . ']' ); ?>" title="<?php esc_attr_e( sprintf( 'Discount for level %s', $role->label ), 'jww' ); ?>" />
 				</td>
 				<td>
-					<input value="<?php echo esc_attr( $role->batch_size ); ?>" type="number" min="0" max="100" step="1" aria-labelledby="jww-discount-amount" name="<?php echo esc_attr( 'batch_size[' . $i . ']' ); ?> title="<?php esc_attr_e( sprintf( 'Batch size for level %s', $role->label ), 'jww' ); ?>" />
+					<input value="<?php echo esc_attr( $role->batch_size ); ?>" type="number" min="0" max="100" step="1" aria-labelledby="jww-discount-amount" name="<?php echo esc_attr( 'batch_size[' . $i . ']' ); ?>" title="<?php esc_attr_e( sprintf( 'Batch size for level %s', $role->label ), 'jww' ); ?>" />
 				</td>
 
 			</tr>
