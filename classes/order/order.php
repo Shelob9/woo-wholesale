@@ -33,8 +33,6 @@ abstract  class order {
 		$this->products = $products;
 		$this->user = $user;
 		$this->set_discount();
-
-
 	}
 
 	abstract protected function hooks();

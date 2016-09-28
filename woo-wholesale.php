@@ -99,8 +99,6 @@ class JoshWooWholesale {
 	}
 
 	public static function route_add_to_cart(){
-
-
 		if( isset( $_POST[ 'jww-add-cart' ] ) && ( current_user_can( 'jww_wholesale' ) || current_user_can( 'manage_options' ) ) ){
 			if( \josh\ww\order\validate::check_nonce( $_POST[ 'jww-add-cart' ] ) ){
 				if( isset( $_POST[ 'jww-amount' ], $_POST[ 'jww-product' ] ) && is_array( $_POST[ 'jww-amount' ] ) && is_array(  $_POST[ 'jww-product' ] )  ){
@@ -112,8 +110,6 @@ class JoshWooWholesale {
 			}
 
 		}
-
-
 	}
 
 	protected static function generate_user(){
@@ -170,6 +166,19 @@ class JoshWooWholesale {
 			new \josh\ww\order\filter( $products, self::generate_user() );
 		}
 
+	}
+
+	public static function checkout_discounts( $cart_object ) {
+		if ( current_user_can( 'jww_wholesale' ) || current_user_can( 'manage_options' ) ) {
+			$discount = \josh\ww\session::get_discount();
+			foreach ( $cart_object->cart_contents as $key => $value ) {
+				$value['data']->price = $value['data']->price * ( 100 - $discount ) / 100;
+			}
+			add_action( 'wp_enqueue_scripts', [ 'JoshWooWholesale', 'dequeue_woocommerce_cart_fragments' ], 11 );
+		}
+	}
+	public static function dequeue_woocommerce_cart_fragments() {
+		wp_dequeue_script('wc-cart-fragments');
 	}
 
 	public static function setup_roles(){
@@ -230,8 +239,6 @@ class JoshWooWholesale {
 
 }
 
-
-
 add_action( 'init',[ 'JoshWooWholesale', 'setup_roles' ], 5 );
 add_action( 'init',[ 'JoshWooWholesale', 'route_add_to_cart' ] );
 
@@ -242,3 +249,4 @@ add_action( 'plugins_loaded', [ 'JoshWooWholesale', 'autoloader' ] );
 add_action( 'admin_init', [ 'JoshWooWholesale', 'admin_save' ] );
 add_action( 'init', [ 'JoshWooWholesale', 'admin' ], 3 );
 
+add_action( 'woocommerce_before_calculate_totals', [ 'JoshWooWholesale', 'checkout_discounts' ], 1 );

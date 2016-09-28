@@ -9,17 +9,17 @@
 namespace josh\ww\order;
 
 
-class filter  extends order {
+class filter extends order {
 
 	protected function hooks(){
 		add_action( 'woocommerce_before_calculate_totals', [ $this, 'cart_prices' ] );
+		// add_filter ( 'woocommerce_get_price', array( $this, 'set_price' ), 10, 2 );
 	}
 
 	public function cart_prices( $cart_object ){
 		foreach ( $cart_object->cart_contents as $key => $value ) {
 			$value['data']->price = $this->set_price( $value['data']->price, $value['data'] );
 		}
-
 	}
 
 
@@ -34,15 +34,7 @@ class filter  extends order {
 			$base_price = $product->price;
 			$price = $this->change_price( $base_price );
 		}
-
-
+		
 		return  $price;
-
 	}
-
-
-
-
-
-
 }
