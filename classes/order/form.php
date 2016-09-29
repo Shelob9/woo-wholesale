@@ -39,11 +39,13 @@ class form {
 
 
 	public function display(){
+
 		WC()->cart->empty_cart();
 		$products = $this->collection->get_products();
 
 		$discount = $this->user->discount;
 		$batch_size = $this->user->batch_size;
+
 		ob_start();
 		include $this->view_dir . '/order-form.php';
 		return ob_get_clean();
