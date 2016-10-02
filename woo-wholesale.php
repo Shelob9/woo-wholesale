@@ -17,16 +17,30 @@ class JoshWooWholesale {
 	 */
 	protected static $settings;
 
+	/**
+	 * Plugin slug
+	 *
+	 * @var string
+	 */
 	protected static $slug = 'jww';
 
-
+	/**
+	 * Allowed role to edit this plugin's options
+	 *
+	 * @var string
+	 */
 	protected static $admin_role = 'manage_options';
 
 	/**
+	 * Roles object
+	 *
 	 * @var \josh\ww\role\roles
 	 */
 	protected static $roles;
 
+	/**
+	 * Load admin if is admin
+	 */
 	public static function admin(){
 		if( is_admin() && ( ! defined( 'DOING_AJAX') || false == DOING_AJAX ) ){
 			self::setup_roles();
@@ -38,6 +52,11 @@ class JoshWooWholesale {
 
 	}
 
+	/**
+	 * Add autoloader
+	 *
+	 * @uses "plugins_loaded"
+	 */
 	public static  function autoloader(){
 		spl_autoload_register(function ($class) {
 			$prefix = 'josh\\ww\\';
@@ -55,12 +74,28 @@ class JoshWooWholesale {
 		});
 	}
 
+	/**
+	 * Add a rewrite for wholesale
+	 *
+	 * PRETY SURE I DO NOT NEED THIS
+	 *
+	 * @uses "init" action
+	 */
 	public static function rewrite(){
 		add_rewrite_rule('^wholesale', 'index.php');
 		add_rewrite_tag('%wholesale%', '([^&]+)');
 
 	}
 
+	/**
+	 * Put our form on the checkout page if conditional is met
+	 *
+	 * @uses "the_content"
+	 *
+	 * @param $content
+	 *
+	 * @return string
+	 */
 	public static function the_content( $content ){
 		if( self::is_page() ){
 			$view = new \josh\ww\order\form( self::view_dir(), self::collect(), new \josh\ww\user( self::get_settings() ) );
@@ -74,6 +109,9 @@ class JoshWooWholesale {
 		return $content;
 	}
 
+	/**
+	 * Route cart actions
+	 */
 	public static function route(){
 		if( self::is_page() ){
 			add_filter( 'the_content', [ 'JoshWooWholesale', 'the_content' ] );
@@ -88,16 +126,31 @@ class JoshWooWholesale {
 
 	}
 
+	/**
+	 * Check if on wholesale page
+	 *
+	 * @return bool
+	 */
 	public static function is_page(){
 		return isset( $_GET[ 'wholesale' ] );
 	}
 
+	/**
+	 * Collect cart data
+	 *
+	 * @return \josh\ww\data\collection
+	 */
 	protected static function collect(){
 		$args = apply_filters( 'jww_product_query_args', [] );
 		$collection =  new \josh\ww\data\collection( $args );
 		return $collection;
 	}
 
+	/**
+	 * Route add to cart
+	 *
+	 * @uses "init"  action
+	 */
 	public static function route_add_to_cart(){
 		if( isset( $_POST[ 'jww-add-cart' ] ) && ( current_user_can( 'jww_wholesale' ) || current_user_can( 'manage_options' ) ) ){
 			if( \josh\ww\order\validate::check_nonce( $_POST[ 'jww-add-cart' ] ) ){
@@ -112,11 +165,19 @@ class JoshWooWholesale {
 		}
 	}
 
+	/**
+	 * Factory for our user object
+	 *
+	 * @return \josh\ww\user
+	 */
 	protected static function generate_user(){
 		return new \josh\ww\user( self::get_settings() );
 	}
 
 
+	/**
+	 * Save data in admin
+	 */
 	public static function admin_save(){
 		if( isset( $_POST[ 'jww-admin-save' ] ) ){
 			if ( ! current_user_can( self::$admin_role ) || ! wp_verify_nonce( $_POST[ 'jww-admin-save' ], 'jww-admin-form' )  ){
@@ -149,7 +210,11 @@ class JoshWooWholesale {
 		}
 	}
 
-
+	/**
+	 * Factory for our settings object
+	 *
+	 * @return \josh\ww\settings
+	 */
 	public static function get_settings(){
 		if( empty( self::$settings ) ){
 			self::settings_init();
@@ -158,6 +223,9 @@ class JoshWooWholesale {
 		return self::$settings;
 	}
 
+	/**
+	 * Setup cart
+	 */
 	protected static function setup_cart(){
 
 		$discount = \josh\ww\session::get_discount();
@@ -168,19 +236,35 @@ class JoshWooWholesale {
 
 	}
 
+	/**
+	 * Setup checkout for wholesale
+	 *
+	 * @uses "woocommerce_before_calculate_totals"
+	 *
+	 * @param $cart_object
+	 */
 	public static function checkout_discounts( $cart_object ) {
 		if ( current_user_can( 'jww_wholesale' ) || current_user_can( 'manage_options' ) ) {
 			$discount = \josh\ww\session::get_discount();
 			foreach ( $cart_object->cart_contents as $key => $value ) {
 				$value['data']->price = $value['data']->price * ( 100 - $discount ) / 100;
 			}
-			add_action( 'wp_enqueue_scripts', [ 'JoshWooWholesale', 'dequeue_woocommerce_cart_fragments' ], 11 );
+			add_action( 'wp_enqueue_scripts', [ __CLASS__, 'dequeue_woocommerce_cart_fragments' ], 11 );
 		}
 	}
+
+	/**
+	 * Remove wc-cart-fragments that are trying very hard to ruin all of this
+	 *
+	 * @uses "wp_enqueue_scripts" action
+	 */
 	public static function dequeue_woocommerce_cart_fragments() {
 		wp_dequeue_script('wc-cart-fragments');
 	}
 
+	/**
+	 * Set up roles object for self::$roles
+	 */
 	public static function setup_roles(){
 		if( null !== self::$roles ){
 			return;
@@ -193,6 +277,9 @@ class JoshWooWholesale {
 
 	}
 
+	/**
+	 * Initialize our settings save system
+	 */
 	protected static function settings_init(){
 		$_saved = get_option( self::$slug );
 		if( is_object( $saved = json_decode( $_saved ))) {
@@ -230,11 +317,14 @@ class JoshWooWholesale {
 
 	}
 
+	/**
+	 * Get path to views dir
+	 *
+	 * @return string
+	 */
 	public static function view_dir(){
 		return __DIR__ . '/views';
 	}
-
-
 
 
 }
