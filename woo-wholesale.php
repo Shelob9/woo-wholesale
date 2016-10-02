@@ -239,14 +239,30 @@ class JoshWooWholesale {
 
 }
 
-add_action( 'init',[ 'JoshWooWholesale', 'setup_roles' ], 5 );
-add_action( 'init',[ 'JoshWooWholesale', 'route_add_to_cart' ] );
 
-add_action( 'template_redirect' ,  [ 'JoshWooWholesale', 'route' ] );
-add_action( 'init',  [ 'JoshWooWholesale', 'rewrite' ] );
-add_action( 'plugins_loaded', [ 'JoshWooWholesale', 'autoloader' ] );
+/**
+ * Make plugin go if WP_Session class exists
+ *
+ * @see https://github.com/ericmann/wp-session-manager
+ *
+ * @uses "plugins_loaded"
+ */
+function joshwoowholesale_init(){
+	if (  class_exists( 'WP_Session' ) ) {
+		add_action( 'init', [ 'JoshWooWholesale', 'setup_roles' ], 5 );
+		add_action( 'init', [ 'JoshWooWholesale', 'route_add_to_cart' ] );
 
-add_action( 'admin_init', [ 'JoshWooWholesale', 'admin_save' ] );
-add_action( 'init', [ 'JoshWooWholesale', 'admin' ], 3 );
+		add_action( 'template_redirect', [ 'JoshWooWholesale', 'route' ] );
+		add_action( 'init', [ 'JoshWooWholesale', 'rewrite' ] );
+		add_action( 'plugins_loaded', [ 'JoshWooWholesale', 'autoloader' ] );
 
-add_action( 'woocommerce_before_calculate_totals', [ 'JoshWooWholesale', 'checkout_discounts' ], 1 );
+		add_action( 'admin_init', [ 'JoshWooWholesale', 'admin_save' ] );
+		add_action( 'init', [ 'JoshWooWholesale', 'admin' ], 3 );
+
+		add_action( 'woocommerce_before_calculate_totals', [ 'JoshWooWholesale', 'checkout_discounts' ], 1 );
+	}
+
+}
+
+add_action( 'plugins_loaded',  'joshwoowholesale_init', 0 );
+
