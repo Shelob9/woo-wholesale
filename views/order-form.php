@@ -65,7 +65,7 @@ $url =  wc_get_checkout_url();
 					<?php echo esc_html( $product->sku ); ?>
 				</td>
 				<td>
-					<input type="number" name="<?php echo esc_attr( 'jww-amount[' . $i .']' ); ?>" min="<?php echo intval( $batch_size ); ?>" step="<?php echo intval( $batch_size ); ?>" id="<?php echo esc_attr( $id_attr ); ?>" value="<?php echo esc_attr( $quantity ); ?>" />
+					<input type="number" name="<?php echo esc_attr( 'jww-amount[' . $i .']' ); ?>" min="0" step="<?php echo intval( $batch_size ); ?>" id="<?php echo esc_attr( $id_attr ); ?>" value="<?php echo esc_attr( $quantity ); ?>" />
 					<input type="hidden" name="<?php echo esc_attr( 'jww-product[' . $i .']' ); ?>" value="<?php echo esc_attr( $product->id ); ?>" />
 				</td>
 
