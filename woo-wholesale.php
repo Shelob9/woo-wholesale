@@ -2,8 +2,12 @@
 
 /**
  Plugin Name: Wholesale orders for WooCommerce
+ Author: Josh Pollock
+ Version: 0.1.0
  */
-
+/**
+ Copyright 2016 Josh Pollock - Licensed under the terms of the GNU GPL v2+
+ */
 
 /**
  * Class JoshWooWholesale
